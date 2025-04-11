@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Confirm Payment - Sweet Delights</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .confirm-container {
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background-color: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .confirm-container h2 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 1.8rem;
+        }
+
+        .order-summary {
+            margin: 2rem 0;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+        }
+
+        .order-summary h3 {
+            color: var(--text-color);
+            margin-bottom: 1.5rem;
+            font-size: 1.4rem;
+        }
+
+        .order-items {
+            margin: 1.5rem 0;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #dee2e6;
+            font-size: 1.1rem;
+        }
+
+        .order-total {
+            margin-top: 1.5rem;
+            padding-top: 1.5rem;
+            border-top: 2px solid #dee2e6;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            font-size: 1.2rem;
+            color: var(--primary-color);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--text-color);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+
+        .form-group input:hover {
+            border-color: #ced4da;
+        }
+
+        .confirm-btn {
+            width: 100%;
+            padding: 1rem;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+        }
+
+        .confirm-btn:hover {
+            background-color: #ff5252;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .confirm-btn:active {
+            transform: translateY(0);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 2rem 0;
+        }
+
+        .loading i {
+            color: var(--primary-color);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading p {
+            margin-top: 1rem;
+            color: var(--text-color);
+            font-size: 1.1rem;
+        }
+
+        .success-message {
+            display: none;
+            text-align: center;
+            padding: 2rem;
+            background-color: #d4edda;
+            color: #155724;
+            border-radius: 10px;
+            margin-top: 1.5rem;
+            animation: fadeIn 0.5s ease;
+        }
+
+        .success-message i {
+            color: #28a745;
+            margin-bottom: 1rem;
+        }
+
+        .success-message h3 {
+            color: #155724;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .success-message p {
+            margin-bottom: 0.5rem;
+            font-size: 1.1rem;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            .confirm-container {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+
+            .order-item {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <h1>Sweet Delights</h1>
+        </div>
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="about.html">About</a>
+            <div class="cart-icon">
+                <a href="cart.html">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count">0</span>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <div class="confirm-container">
+            <h2>Confirm Your Order</h2>
+            <div class="order-summary">
+                <h3>Order Summary</h3>
+                <div id="order-items" class="order-items">
+                    <!-- Order items will be dynamically loaded here -->
+                </div>
+                <div class="order-total">
+                    <span>Total:</span>
+                    <span id="order-total-amount">$0</span>
+                </div>
+            </div>
+
+            <form action="https://formspree.io/f/xpwpkbrp" method="post" id="confirm-form">
+                <input type="hidden" name="order_details" id="order-details-input">
+                <input type="hidden" name="order_total" id="order-total-input">
+                
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required>
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <button type="submit" class="confirm-btn">Confirm Order</button>
+            </form>
+
+            <div class="loading">
+                <i class="fas fa-spinner fa-2x"></i>
+                <p>Processing your order...</p>
+            </div>
+
+            <div class="success-message">
+                <i class="fas fa-check-circle fa-3x"></i>
+                <h3>Order Confirmed!</h3>
+                <p>Thank you for your purchase. We'll send you an email confirmation shortly.</p>
+                <p>You will be redirected to the home page in a few seconds...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>Sweet Delights</h3>
+                <p>Bringing sweetness to your special moments</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="privacy.html">Privacy Policy</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: info@sweetdelights.com</p>
+                <p>Phone: (555) 123-4567</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2025 Sweet Delights. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Get cart from localStorage
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const orderItems = document.getElementById('order-items');
+        const orderTotalAmount = document.getElementById('order-total-amount');
+        const confirmForm = document.getElementById('confirm-form');
+        const loadingDiv = document.querySelector('.loading');
+        const successMessage = document.querySelector('.success-message');
+        const orderDetailsInput = document.getElementById('order-details-input');
+        const orderTotalInput = document.getElementById('order-total-input');
+
+        // Display order summary
+        function displayOrderSummary() {
+            let total = 0;
+            const orderDetails = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                total += itemTotal;
+                return `${item.title} x ${item.quantity} - $${itemTotal}`;
+            }).join('\n');
+            
+            orderItems.innerHTML = cart.map(item => {
+                const itemTotal = item.price * item.quantity;
+                return `
+                    <div class="order-item">
+                        <span>${item.title} x ${item.quantity}</span>
+                        <span>$${itemTotal}</span>
+                    </div>
+                `;
+            }).join('');
+            
+            orderTotalAmount.textContent = `$${total}`;
+            
+            // Update hidden inputs for Formspree
+            orderDetailsInput.value = orderDetails;
+            orderTotalInput.value = `$${total}`;
+        }
+
+        // Handle form submission
+        confirmForm.addEventListener('submit', function(e) {
+            // Show loading state
+            loadingDiv.style.display = 'block';
+            
+            // The form will be submitted automatically to Formspree
+            // After successful submission, Formspree will redirect back to our success page
+            
+            // Clear cart after short delay to ensure form submission
+            setTimeout(() => {
+                localStorage.removeItem('cart');
+            }, 1000);
+        });
+
+        // Initialize page
+        displayOrderSummary();
+        
+        // Update cart count
+        const cartCount = document.querySelector('.cart-count');
+        cartCount.textContent = cart.reduce((sum, item) => sum + item.quantity, 0);
+    </script>
+</body>
+</html>
